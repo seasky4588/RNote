@@ -2,7 +2,9 @@
 title: "Tidyverse Study"
 author: "Sejin Lim"
 date: '2020 3 18 '
-output: html_document
+output: 
+ html_document:
+  code_folding: hide 
 ---
 
 ```{r setup, include=FALSE}
@@ -51,7 +53,9 @@ head(storms2$status, 10)
 - transmute (create new variable)
 - count
 - summarize (apply basic function to data)
-
+- conditional excution
+- gather (make wide data longer)
+- spread (make long data wider)
 
 Read a data 
 ```{r}
@@ -168,12 +172,64 @@ starwars %>%
   arrange(desc(Count))
 ```
 
-# Conditional Execution
+## Conditional Execution
 
 Often want to execute statements conditionally (say to create a new variable)
 `if then else` syntax
+- `if` condition can only take in a single comparison : `if(condtion){then excute code}`
+- `ifelse` is vectorized if statment : `ifelse(vector_condition, if_true_do_this, if_false_do_this)` 
 
 ```{r}
+mutate(starwars_small, New = ifelse(
+   (height>180) & (mass > 100) & (species =="Human"), "Big", "NotBig")
+   )
+```
+
+
+## Gather 
+
+takes multiple columns, and gathers them into key-value pairs 
+- Make wide data longer
+- Most important as analysis methods often prefer this form
+- key = new name for values in columns
+- value = new name for data values
+- columns describe which columns to take
+
+```{r}
+# wide form
+tempsData <- read_delim("data/cityTemps.txt", delim=" ")
+
+tempsData %>% 
+  gather(key=day, value=temp, 2:8)
+
+newTempData<- tempsData %>% 
+  gather(key=day, value=temp, sun:sat)
+
+```
+
+
+## Spread
+
+takes two columns(key & value) and spreads in to multiple columns
+- Make long data wider (opposite from gather)
+- key = new column names
+- value = value to spread out 
+
+Also gives an easy method to seperate a column (or combine two columns) using `seperate()` and `unit()` 
+
+```{r}
+newTempData %>%
+  spread(key=day, value=temp)
+
+# Read a data
+chicagoData <- read_csv("data/Chicago.csv") 
+
+# default: remove=TRUE (remove the original variable)
+chicagoData %>%
+  separate(date, c("Day", "Month", "Year"), sep= "/")  
+
+chicagoData %>%
+  separate(date, c("Day", "Month", "Year"), sep= "/", convert = TRUE, remove = FALSE)
 
 ```
 
