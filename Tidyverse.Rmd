@@ -1,0 +1,124 @@
+---
+title: "Tidyverse Study"
+author: "Sejin Lim"
+date: '2020 3 18 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load Library Packages
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+write_csv(storms, "data/storms.csv")
+```
+
+This is how I import data into my R Notebook. I am going to use the tidyverse pacakage from *readr*, called `read_csv()`
+
+```{r}
+storms2 <- read_csv("data/storms.csv")
+```
+
+Let's have a look at a storms data
+
+```{r}
+storms2
+```
+
+```{r}
+glimpse(storms2)   # it is like str() prettier version in tidyverse
+```
+
+This is how I can look at a vector of my dataframe
+
+```{r}
+storms2$status
+```
+
+# dplyr
+
+- filter (rows)
+- arrange (sort rows by variables)
+- select (columns)
+- mutate (change cell values)
+- Count
+- Summarize
+
+```{r}
+starwars
+```
+
+## Filter
+
+```{r}
+#starwars_small <- starwars %>% 
+#  filter(!is.na(mass), !is.na(height))
+starwars_small <- starwars %>% 
+  filter(mass >= 0)
+```
+
+## Arrange
+
+```{r}
+starwars_small %>% 
+  arrange(desc(height), desc(name))
+```
+
+## Select
+
+```{r}
+starwars_small %>% 
+  arrange(species, height) %>% 
+  select(name, species, height, mass, birth_year)
+```
+
+
+```{r}
+starwars_small %>% 
+  select(name, species, height, mass, birth_year) %>% 
+  arrange(species, desc(height), mass, name) %>% 
+  filter(species == "Human") 
+  
+```
+
+
+## Mutate
+
+```{r}
+starwars_small %>% 
+  select(name, species, height, mass, birth_year) %>% 
+  arrange(species, desc(height), mass, name) %>% 
+  filter(species == "Human") %>% 
+  mutate(BMI = round(height / mass, 2))
+```
+
+
+## Count
+
+```{r}
+starwars %>% 
+  count(mass) %>% 
+  tidyr::drop_na() %>% 
+  arrange(desc(n))
+```
+
+
+## Summarize
+
+```{r}
+starwars %>% 
+  filter(!is.na(height)) %>% 
+  group_by(species) %>% 
+  summarise(Count = n(), mean_ht = mean(height), min_ht = min(height),
+            max_ht = max(height), sum_ht = sum(height)) %>% 
+  arrange(desc(Count))
+```
+
+
